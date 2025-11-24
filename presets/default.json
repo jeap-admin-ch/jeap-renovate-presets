@@ -1,0 +1,13 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Apply the default JEAP renovate preset",
+  "extends": [
+    "config:best-practices",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-unstable-maven-deps",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/dashboard-approval-maven-major",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-major",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-minor-patch",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-deps-minor-patch",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-plugins-minor-patch"
+  ]
+}

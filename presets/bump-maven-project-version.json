@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Bump the version of a Maven project based on the Maven related updates found by Renovate",
+  "packageRules": [
+    {
+      "description": "Run Maven goal versions:set once per branch with the bumped version to also propagate the version to the Maven submodules",
+      "matchManagers": ["maven", "maven-wrapper"],
+      "postUpgradeTasks": {
+        "executionMode": "branch",
+        "commands": [
+          "mvn build-helper:parse-version versions:set -DnewVersion='{{#if (includes (lookupArray upgrades \"updateType\") \"major\")}}${parsedVersion.nextMajorVersion}.0.0{{else if (includes (lookupArray upgrades \"updateType\") \"minor\")}}${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}.0{{else}}${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.nextIncrementalVersion}{{/if}}${parsedVersion.qualifier?}' -DgenerateBackupPoms=false -B -q"
+        ],
+        "fileFilters": ["**/pom.xml"]
+      }
+    }
+  ]
+}

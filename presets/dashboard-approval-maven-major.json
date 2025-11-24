@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Require dashboard approval for all Maven major updates",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "dependencyDashboardApproval": true,
+      "labels": [
+        "maven",
+        "major"
+      ]
+    }
+  ]
+}

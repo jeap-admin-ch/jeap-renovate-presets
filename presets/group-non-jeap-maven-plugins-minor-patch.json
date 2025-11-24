@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Group non-JEAP Maven plugin minor and patch updates",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "matchDepTypes": [
+        "build"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "Non-JEAP Maven Plugins (minor & patch)",
+      "groupSlug": "non-jeap-maven-plugins-minor-patch",
+      "matchPackageNames": [
+        "!/^ch\\.admin\\.bit\\.jeap:/"
+      ],
+      "labels": [
+        "maven",
+        "plugin",
+        "non-jeap"
+      ]
+    }
+  ]
+}

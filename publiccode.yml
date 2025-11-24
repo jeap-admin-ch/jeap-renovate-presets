@@ -1,0 +1,38 @@
+publiccodeYmlVersion: 0.4.0
+name: jeap-renovate-presets
+applicationSuite: jEAP
+softwareVersion: 0.0.1
+releaseDate: 2025-11-21
+url: "https://github.com/jeap-admin-ch/jeap-renovate-presets.git"
+landingURL: "https://github.com/jeap-admin-ch/jeap"
+platforms:
+  - web
+categories:
+  - application-development
+developmentStatus: development
+softwareType: library
+description:
+  en:
+    localisedName: jeap-renovate-presets
+    shortDescription: Renovate presets for jEAP based projects.
+    longDescription: >
+      This repository contains presets for managing dependency updates in jEAP-based projects with Renovate.
+    features:
+      - Group JEAP major updates and not require an approval on the dependency dashboard for these updates
+      - Group JEAP minor and patch updates
+      - Group non-JEAP Maven dependency minor and patch updates
+      - Group non-JEAP Maven plugin minor and patch updates
+      - Require dashboard approval for all Maven major updates
+      - Ignore unstable Maven dependencies
+      - Bump the version of a Maven project based on the Maven related updates found by Renovate
+legal:
+  license: Apache-2.0
+maintenance:
+  type: internal
+  contacts:
+    - name: Federal Office of Information Technology, Systems and Telecommunication FOITT
+      email: jeap-community@bit.admin.ch
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en

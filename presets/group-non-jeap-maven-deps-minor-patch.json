@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Group non-JEAP Maven dependency minor and patch updates",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "Non-JEAP Maven Deps (minor & patch)",
+      "groupSlug": "non-jeap-maven-deps-minor-patch",
+      "matchPackageNames": [
+        "!/^ch\\.admin\\.bit\\.jeap:/"
+      ],
+      "matchDepTypes": [
+        "parent",
+        "dependencies",
+        "dependencyManagement"
+      ],
+      "labels": [
+        "maven",
+        "non-jeap"
+      ]
+    }
+  ]
+}

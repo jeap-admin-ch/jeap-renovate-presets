@@ -1,0 +1,11 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Ignore unstable Maven dependencies",
+  "packageRules": [
+    {
+      "matchManagers": ["maven"],
+      "ignoreUnstable": true,
+      "allowedVersions": "!/-(?:\\d{14}|\\d{8}(?:\\.\\d{6})?-\\d+)$/"
+    }
+  ]
+}

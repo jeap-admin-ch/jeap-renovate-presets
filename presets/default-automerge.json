@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Apply the default JEAP renovate preset but with automerge enabled for JEAP minor and patch updates as well as minor and patch maven plugin updates.",
+  "extends": [
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default"
+  ],
+  "packageRules": [
+    {
+      "description": "Enable automerge for JEAP minor and patch updates",
+      "extends": ["local>jeap-admin-ch/nivel-renovate-presets//presets/group-jeap-minor-patch"],
+      "automerge": true
+    },
+    {
+      "description": "Enable automerge for Maven plugins minor and patch updates",
+      "extends": ["local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-plugins-minor-patch"],
+      "automerge": true
+    }
+  ]
+}
