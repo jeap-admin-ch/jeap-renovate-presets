@@ -8,6 +8,7 @@
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-major",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-minor-patch",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-deps-minor-patch",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-plugins-minor-patch"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-plugins-minor-patch",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/bump-maven-project-version"
   ]
 }

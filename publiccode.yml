@@ -1,8 +1,8 @@
 publiccodeYmlVersion: 0.4.0
 name: jeap-renovate-presets
 applicationSuite: jEAP
-softwareVersion: 0.0.1
-releaseDate: 2025-11-21
+softwareVersion: 0.0.2
+releaseDate: 2025-12-09
 url: "https://github.com/jeap-admin-ch/jeap-renovate-presets.git"
 landingURL: "https://github.com/jeap-admin-ch/jeap"
 platforms:
@@ -19,7 +19,8 @@ description:
     localisedName: jeap-renovate-presets
     shortDescription: Renovate presets for jEAP based projects.
     longDescription: >
-      This repository contains presets for managing dependency updates in jEAP-based projects with Renovate.
+      This repository contains presets for managing dependency updates in jEAP-based projects with Renovate and
+      it defines a default preset configuration that we suggest to be used in jEAP based projects.
     features:
       - Group JEAP major updates and not require an approval on the dependency dashboard for these updates
       - Group JEAP minor and patch updates
