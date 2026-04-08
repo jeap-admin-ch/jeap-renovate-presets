@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Disable Docker image updates for docker-compose files",
+  "packageRules": [
+    {
+      "matchManagers": ["docker-compose"],
+      "enabled": false
+    }
+  ]
+}
