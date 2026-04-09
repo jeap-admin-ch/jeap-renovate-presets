@@ -7,7 +7,7 @@
   "packageRules": [
     {
       "description": "Enable automerge for JEAP minor and patch updates",
-      "extends": ["local>jeap-admin-ch/nivel-renovate-presets//presets/group-jeap-minor-patch"],
+      "extends": ["local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-minor-patch"],
       "automerge": true
     },
     {
