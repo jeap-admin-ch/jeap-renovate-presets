@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Automatically update CHANGELOG.md after Maven dependency updates",
+  "packageRules": [
+    {
+      "matchManagers": ["maven"],
+      "postUpgradeTasks": {
+        "commands": [
+          "curl -sSf -o /tmp/update-changelog.sh 'https://raw.githubusercontent.com/jeap-admin-ch/jeap-renovate-presets/main/scripts/update-changelog.sh'",
+          "chmod +x /tmp/update-changelog.sh",
+          "/tmp/update-changelog.sh {{{updateType}}} {{{depName}}} {{{currentVersion}}} {{{newVersion}}}"
+        ],
+        "fileFilters": ["CHANGELOG.md"],
+        "executionMode": "update"
+      }
+    }
+  ]
+}

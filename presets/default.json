@@ -3,6 +3,7 @@
   "description": "Apply the default JEAP renovate preset",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default-no-project-version-bump",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/bump-maven-project-version"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/bump-maven-project-version",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/update-changelog-maven"
   ]
 }
