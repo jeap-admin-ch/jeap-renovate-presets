@@ -1,0 +1,15 @@
+{
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "groupName": "All dependencies",
+      "groupSlug": "all",
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
+      "matchManagers": ["*"],
+      "matchDepTypes": ["*"]
+    }
+  ],
+  "prConcurrentLimit": 1,
+  "prHourlyLimit": 0
+}
+
