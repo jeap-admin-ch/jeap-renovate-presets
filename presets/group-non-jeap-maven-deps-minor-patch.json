@@ -3,6 +3,7 @@
   "description": "Group non-JEAP Maven dependency minor and patch updates",
   "packageRules": [
     {
+      "description": "Retained in the default preset for labels; groupName and groupSlug are intentionally overridden by later cross-manager grouping rules.",
       "matchManagers": [
         "maven"
       ],

@@ -1,5 +1,6 @@
 {
-  "extends": ["config:base"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
   "packageRules": [
     {
       "groupName": "All dependencies",
@@ -9,7 +10,6 @@
       "matchDepTypes": ["*"]
     }
   ],
-  "prConcurrentLimit": 1,
-  "prHourlyLimit": 0
+  "prHourlyLimit": 1,
+  "prConcurrentLimit": 1
 }
-

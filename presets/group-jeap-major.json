@@ -3,6 +3,7 @@
   "description": "Group JEAP major updates and not require an approval on the dependency dashboard for these updates",
   "packageRules": [
     {
+      "description": "Retained in the default preset for labels and dashboard approval; groupName and groupSlug are intentionally overridden by later cross-manager grouping rules.",
       "matchManagers": [
         "maven"
       ],

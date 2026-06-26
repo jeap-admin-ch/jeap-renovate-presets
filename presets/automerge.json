@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Enable automerge for routine Maven, Dockerfile, and Docker Compose updates.",
+  "packageRules": [
+    {
+      "description": "Enable automerge for routine Maven and Docker dependency updates",
+      "matchManagers": [
+        "maven",
+        "dockerfile",
+        "docker-compose"
+      ],
+      "matchUpdateTypes": [
+        "pin",
+        "pinDigest",
+        "digest",
+        "patch",
+        "minor"
+      ],
+      "automerge": true
+    }
+  ]
+}

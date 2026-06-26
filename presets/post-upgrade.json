@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Bump Maven project version and update CHANGELOG.md (only if one exists) after Maven, Dockerfile, and Docker Compose dependency updates. Runs as a single branch-level postUpgradeTask. Version bump is skipped for projects without a pom.xml.",
+  "postUpgradeTasks": {
+    "executionMode": "branch",
+    "dataFileTemplate": "{{{ toJSON upgrades }}}",
+    "commands": [
+      "curl -sSf -o /tmp/post-upgrade.sh 'https://raw.githubusercontent.com/jeap-admin-ch/jeap-renovate-presets/master/scripts/post-upgrade.sh'",
+      "chmod +x /tmp/post-upgrade.sh",
+      "/tmp/post-upgrade.sh"
+    ],
+    "fileFilters": [
+      "pom.xml",
+      "**/pom.xml",
+      "CHANGELOG.md"
+    ]
+  }
+}
