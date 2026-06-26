@@ -1,0 +1,53 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Enable automerge for routine Maven, Dockerfile, and Docker Compose updates, plus legacy JEAP Maven and Maven plugin minor/patch rules.",
+  "packageRules": [
+    {
+      "description": "Enable automerge for JEAP minor and patch updates",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchPackageNames": [
+        "/^ch\\.admin\\.bit\\.jeap:/"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Enable automerge for Maven plugins minor and patch updates",
+      "matchManagers": [
+        "maven"
+      ],
+      "matchDepTypes": [
+        "build"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchPackageNames": [
+        "!/^ch\\.admin\\.bit\\.jeap:/"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Enable automerge for routine Maven and Docker dependency updates",
+      "matchManagers": [
+        "maven",
+        "dockerfile",
+        "docker-compose"
+      ],
+      "matchUpdateTypes": [
+        "pin",
+        "pinDigest",
+        "digest",
+        "patch",
+        "minor"
+      ],
+      "automerge": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Group routine Maven, Dockerfile, and Docker Compose dependency updates (pin, pinDigest, digest, patch, minor) into a single PR to prevent PR starvation",
+  "packageRules": [
+    {
+      "description": "Group routine Maven and Docker-related dependency updates",
+      "matchManagers": ["maven", "dockerfile", "docker-compose"],
+      "matchUpdateTypes": ["pin", "pinDigest", "digest", "patch", "minor"],
+      "groupName": "routine Maven and Docker dependency updates",
+      "groupSlug": "routine-maven-and-docker-dependencies",
+      "prPriority": 1
+    }
+  ]
+}

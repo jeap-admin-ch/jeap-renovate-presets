@@ -18,6 +18,20 @@ To use one or more of these presets reference them in your project's `renovate.j
 }
 ```
 
+## Default presets
+
+| Preset | Maven project version bump | CHANGELOG.md update | Automerge |
+| --- | --- | --- | --- |
+| `default` | Yes | Yes, if `CHANGELOG.md` exists | No |
+| `default-automerge` | Yes | Yes, if `CHANGELOG.md` exists | Yes |
+| `default-no-version-bump` | No | No | No |
+| `default-no-version-bump-automerge` | No | No | Yes |
+
+Compatibility aliases are kept for existing consumers:
+
+- `post-upgrade-maven` extends `post-upgrade`.
+- `default-no-project-version-bump` extends `default-no-version-bump`.
+
 ## Changes
 
 Change log is available at [CHANGELOG.md](./CHANGELOG.md)

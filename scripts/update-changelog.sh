@@ -1,4 +1,7 @@
 #!/bin/bash
+# DEPRECATED: This script is replaced by scripts/post-upgrade.sh which handles
+# both Maven version bumping and changelog updates in a single branch-level postUpgradeTask.
+# This file is kept for backwards compatibility only and will be removed in a future release.
 set -euo pipefail
 
 UPDATE_TYPE="${1:-unknown}"

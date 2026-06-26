@@ -1,0 +1,16 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Apply the default JEAP renovate preset without bumping the Maven project version or updating CHANGELOG.md.",
+  "extends": [
+    "config:best-practices",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-unstable-maven-deps#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/dashboard-approval-maven-major#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-major#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-minor-patch#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-deps-minor-patch#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-plugins-minor-patch#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-routine-maven-docker#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-major-maven-docker#feature/JEAP-7110"
+  ],
+  "prHourlyLimit": 1
+}

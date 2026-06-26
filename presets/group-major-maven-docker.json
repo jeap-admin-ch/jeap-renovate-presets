@@ -1,0 +1,14 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Group major Maven, Dockerfile, and Docker Compose dependency updates into a single PR to prevent PR starvation",
+  "packageRules": [
+    {
+      "description": "Group major Maven and Docker-related dependency updates",
+      "matchManagers": ["maven", "dockerfile", "docker-compose"],
+      "matchUpdateTypes": ["major"],
+      "groupName": "major Maven and Docker dependency updates",
+      "groupSlug": "major-maven-and-docker-dependencies",
+      "prPriority": 0
+    }
+  ]
+}

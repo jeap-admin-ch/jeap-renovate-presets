@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Apply the default JEAP renovate preset without Maven project version bump or CHANGELOG.md update, but with automerge enabled.",
+  "extends": [
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default-no-version-bump#feature/JEAP-7110",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/automerge#feature/JEAP-7110"
+  ]
+}
