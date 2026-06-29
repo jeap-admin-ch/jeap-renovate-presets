@@ -5,7 +5,7 @@
     "executionMode": "branch",
     "dataFileTemplate": "{{{ toJSON upgrades }}}",
     "commands": [
-      "curl -sSf -o /tmp/post-upgrade.sh 'https://raw.githubusercontent.com/jeap-admin-ch/jeap-renovate-presets/master/scripts/post-upgrade.sh'",
+      "curl -sSf -o /tmp/post-upgrade.sh 'https://raw.githubusercontent.com/jeap-admin-ch/jeap-renovate-presets/feature/JEAP-7110/scripts/post-upgrade.sh'",
       "chmod +x /tmp/post-upgrade.sh",
       "/tmp/post-upgrade.sh"
     ],
