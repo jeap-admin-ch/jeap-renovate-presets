@@ -40,7 +40,7 @@ fi
 
 UPGRADES_FILE="$RELEVANT_UPGRADES_FILE"
 
-# -- Version bump (only if pom.xml is present) ────────────────────────────────
+# -- Version bump (only if pom.xml is present) -------------------------------
 
 if [ -f "pom.xml" ]; then
   # Determine the highest update type across ALL upgrades in this branch.
@@ -75,10 +75,10 @@ if [ -f "pom.xml" ]; then
   esac
 fi
 
-# ── CHANGELOG update (only if CHANGELOG.md is present) ───────────────────────
+# -- CHANGELOG update (only if CHANGELOG.md is present) ----------------------
 
 if [ ! -f "$CHANGELOG" ]; then
-  echo "No CHANGELOG.md found in project root — skipping changelog update."
+  echo "No CHANGELOG.md found in project root - skipping changelog update."
   exit 0
 fi
 
@@ -100,7 +100,7 @@ if [ -f "pom.xml" ]; then
 fi
 
 if [ -z "$VERSION" ]; then
-  echo "WARNING: Could not read version from pom.xml — skipping changelog update."
+  echo "WARNING: Could not read version from pom.xml - skipping changelog update."
   exit 0
 fi
 
@@ -108,21 +108,20 @@ DATE=$(date +%Y-%m-%d)
 
 # Add a single dependency entry to CHANGELOG.md.
 # Handles four cases:
-#   1. ## [VERSION] section exists and already has a ### Dependencies sub-section → append entry
-#   2. ## [VERSION] section exists but has no ### Dependencies sub-section → insert sub-section
-#   3. No ## [VERSION] section yet → insert a new one before the first existing ## section
-#   4. No ## sections at all → append at the end
+#   1. ## [VERSION] section exists and already has a ### Dependencies sub-section -> append entry
+#   2. ## [VERSION] section exists but has no ### Dependencies sub-section -> insert sub-section
+#   3. No ## [VERSION] section yet -> insert a new one before the first existing ## section
+#   4. No ## sections at all -> append at the end
 add_changelog_entry() {
   local DEP_NAME="$1"
-  local OLD_VERSION="$2"
-  local NEW_VERSION="$3"
-  local UPDATE_TYPE="$4"
+  local VERSION_CHANGE="$2"
+  local UPDATE_TYPE="$3"
 
-  local ENTRY="- **${DEP_NAME}**: ${OLD_VERSION} → ${NEW_VERSION} (${UPDATE_TYPE})"
+  local ENTRY="- **${DEP_NAME}**: ${VERSION_CHANGE} (${UPDATE_TYPE})"
 
   # Skip if this exact entry already exists (idempotent)
-  if grep -qF "${DEP_NAME}: ${OLD_VERSION} → ${NEW_VERSION}" "$CHANGELOG"; then
-    echo "Entry already exists, skipping: ${DEP_NAME} ${OLD_VERSION} → ${NEW_VERSION}"
+  if grep -qF -- "$ENTRY" "$CHANGELOG"; then
+    echo "Entry already exists, skipping: ${DEP_NAME} ${VERSION_CHANGE} (${UPDATE_TYPE})"
     return
   fi
 
@@ -130,7 +129,7 @@ add_changelog_entry() {
   TMPFILE=$(mktemp)
 
   if grep -q "^## \[${VERSION}\]" "$CHANGELOG"; then
-    # Section for this version exists — check whether ### Dependencies already exists within it
+    # Section for this version exists - check whether ### Dependencies already exists within it
     local VERSION_HAS_DEPS=false
     local IN_VERSION=false
     while IFS= read -r line; do
@@ -162,7 +161,7 @@ add_changelog_entry() {
       fi
     done < "$CHANGELOG"
   else
-    # No section for this version yet — insert before the first existing ## section
+    # No section for this version yet - insert before the first existing ## section
     local HEADER_DONE=false
     while IFS= read -r line; do
       if [ "$HEADER_DONE" = false ] && echo "$line" | grep -q "^## \["; then
@@ -176,7 +175,7 @@ add_changelog_entry() {
       echo "$line" >> "$TMPFILE"
     done < "$CHANGELOG"
 
-    # No ## sections found at all — append at end
+    # No ## sections found at all - append at end
     if [ "$HEADER_DONE" = false ]; then
       echo "" >> "$TMPFILE"
       echo "## [${VERSION}] - ${DATE}" >> "$TMPFILE"
@@ -187,22 +186,66 @@ add_changelog_entry() {
   fi
 
   mv "$TMPFILE" "$CHANGELOG"
-  echo "Updated ${CHANGELOG}: [${VERSION}] ${DEP_NAME} ${OLD_VERSION} → ${NEW_VERSION}"
+  echo "Updated ${CHANGELOG}: [${VERSION}] ${DEP_NAME} ${VERSION_CHANGE} (${UPDATE_TYPE})"
 }
 
-# Process each dependency upgrade from the JSON file written by Renovate
-node - "$UPGRADES_FILE" <<'NODE' | while IFS=$'\t' read -r DEP_NAME CURRENT_VERSION NEW_VERSION UPDATE_TYPE; do
+# Process each dependency upgrade from the JSON file written by Renovate.
+# The Node step normalizes missing values, avoids literal null entries, and skips
+# upgrades that do not have enough version or digest data for a useful changelog line.
+node - "$UPGRADES_FILE" <<'NODE' | while IFS=$'\t' read -r DEP_NAME VERSION_CHANGE UPDATE_TYPE; do
 const fs = require("fs");
 const upgrades = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
-const clean = (value) => String(value ?? "").replace(/[\t\r\n]/g, " ");
+const clean = (value) => String(value ?? "").replace(/[\t\r\n]/g, " ").trim();
+const hasValue = (value) => value !== "" && value !== "null" && value !== "undefined";
+const shortDigest = (value) => {
+  if (!hasValue(value)) {
+    return "";
+  }
+  const digest = clean(value);
+  const [algorithm, hash] = digest.includes(":") ? digest.split(":", 2) : ["", digest];
+  const shortHash = hash.slice(0, 12);
+  return algorithm ? `${algorithm}:${shortHash}` : shortHash;
+};
+const pair = (from, to) => {
+  if (hasValue(from) && hasValue(to)) {
+    return `${from} → ${to}`;
+  }
+  if (hasValue(to)) {
+    return `updated to ${to}`;
+  }
+  if (hasValue(from)) {
+    return `updated from ${from}`;
+  }
+  return "";
+};
+const versionChangeFor = (upgrade) => {
+  const updateType = clean(upgrade.updateType);
+  const currentVersion = clean(upgrade.currentVersion);
+  const newVersion = clean(upgrade.newVersion);
+  const currentDigest = shortDigest(upgrade.currentDigest);
+  const newDigest = shortDigest(upgrade.newDigest);
+
+  if (updateType === "digest" || (!hasValue(currentVersion) && !hasValue(newVersion))) {
+    const digestChange = pair(currentDigest, newDigest);
+    if (!digestChange) {
+      return "";
+    }
+    const version = hasValue(newVersion) ? newVersion : currentVersion;
+    return hasValue(version) ? `${version} (${digestChange})` : digestChange;
+  }
+
+  return pair(currentVersion, newVersion);
+};
+
 for (const upgrade of upgrades) {
-  console.log([
-    clean(upgrade.depName),
-    clean(upgrade.currentVersion),
-    clean(upgrade.newVersion),
-    clean(upgrade.updateType),
-  ].join("\t"));
+  const depName = clean(upgrade.depName);
+  const updateType = clean(upgrade.updateType);
+  const versionChange = versionChangeFor(upgrade);
+  if (!depName || !updateType || !versionChange) {
+    continue;
+  }
+  console.log([depName, versionChange, updateType].join("\t"));
 }
 NODE
-  add_changelog_entry "$DEP_NAME" "$CURRENT_VERSION" "$NEW_VERSION" "$UPDATE_TYPE"
+  add_changelog_entry "$DEP_NAME" "$VERSION_CHANGE" "$UPDATE_TYPE"
 done

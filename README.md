@@ -27,6 +27,8 @@ To use one or more of these presets reference them in your project's `renovate.j
 | `default-no-version-bump` | No | No | No |
 | `default-no-version-bump-automerge` | No | No | Yes |
 
+The post-upgrade presets update `CHANGELOG.md` only when a root `CHANGELOG.md` already exists; they never create a new changelog file.
+
 Compatibility aliases are kept for existing consumers:
 
 - `post-upgrade-maven` extends `post-upgrade`.

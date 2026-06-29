@@ -20,6 +20,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - `default-no-version-bump`: grouping only, without Maven project version bump or changelog update.
   - `default-no-version-bump-automerge`: same as `default-no-version-bump`, with automerge enabled.
 - Compatibility alias presets `default-no-project-version-bump` and `post-upgrade-maven`.
+- Automated smoke tests for `scripts/post-upgrade.sh` covering Maven, Docker digest, special-character dependency names, missing changelogs, and irrelevant upgrades.
 
 ### Changed
 
@@ -34,6 +35,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `default-no-version-bump` and `group-all-into-one-pr` set `prHourlyLimit: 1` in the presets so PR creation limits do not depend on the Renovate Bot runner configuration. `prConcurrentLimit: 1` remains in `group-all-into-one-pr`.
 - `README.md` now documents the four default preset variants and compatibility aliases.
 - `publiccode.yml` was updated to version `0.3.0`.
+- The post-upgrade data template now uses Renovate JSON serialization for upgrade data, so dependency names with JSON-special characters do not break parsing.
+- Docker digest changelog entries now use digest information when version fields are absent and skip entries that do not contain useful version or digest data.
+- Missing root `CHANGELOG.md` handling is documented as intentional skip behavior; the script logs the skip and does not create a new changelog.
 
 ### Deprecated
 
