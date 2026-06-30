@@ -1,7 +1,0 @@
-{
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Compatibility alias for post-upgrade. Use presets/post-upgrade instead.",
-  "extends": [
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/post-upgrade#feature/JEAP-7110"
-  ]
-}

@@ -1,7 +1,0 @@
-{
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Compatibility alias for default-no-version-bump. Use presets/default-no-version-bump instead.",
-  "extends": [
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/default-no-version-bump#feature/JEAP-7110"
-  ]
-}

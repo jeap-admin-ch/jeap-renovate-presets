@@ -29,11 +29,6 @@ To use one or more of these presets reference them in your project's `renovate.j
 
 The post-upgrade presets update `CHANGELOG.md` only when a root `CHANGELOG.md` already exists; they never create a new changelog file.
 
-Compatibility aliases are kept for existing consumers:
-
-- `post-upgrade-maven` extends `post-upgrade`.
-- `default-no-project-version-bump` extends `default-no-version-bump`.
-
 ## Changes
 
 Change log is available at [CHANGELOG.md](./CHANGELOG.md)
