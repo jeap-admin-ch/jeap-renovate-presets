@@ -1,0 +1,12 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Disable Renovate for Kafka message-type dependencies",
+  "packageRules": [
+    {
+      "matchManagers": ["maven"],
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["/\\.messagetype\\./"],
+      "enabled": false
+    }
+  ]
+}

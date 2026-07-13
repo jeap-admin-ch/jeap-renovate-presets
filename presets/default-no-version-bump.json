@@ -4,6 +4,7 @@
   "extends": [
     "config:best-practices",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-unstable-maven-deps",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-kafka-message-deps",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/dashboard-approval-maven-major",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-major",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-jeap-minor-patch",

@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-07-13
+
+### Added
+
+- New preset `ignore-kafka-message-deps`: excludes Kafka message-type dependencies from Renovate updates. Message-type dependencies represent interfaces that must be updated following the Expand-Migrate-Contract (EMC) compatibility approach, requiring coordinated updates across producer and consumer services. This preset prevents uncoordinated automatic updates.
+
+### Changed
+
+- `default-no-version-bump` now extends `ignore-kafka-message-deps`. This means all four main default presets (`default`, `default-automerge`, `default-no-version-bump`, `default-no-version-bump-automerge`) now exclude Kafka message-type dependencies with group IDs matching the pattern `*.messagetype.*`.
+
 ## [0.3.0] - 2026-06-25
 
 ### Added
