@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Update Kafka message-type dependencies only to versions compatible with PROD",
+  "customDatasources": {
+    "jeap-message-contracts": {
+      "defaultRegistryUrlTemplate": "http://host.docker.internal:18080/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&repository=configure-me&baseBranch=main",
+      "format": "json"
+    }
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["maven"],
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["/\\.messagetype\\./"],
+      "enabled": true,
+      "overrideDatasource": "custom.jeap-message-contracts",
+      "registryUrls": [],
+      "versioning": "semver",
+      "groupName": "Kafka message contracts",
+      "groupSlug": "kafka-message-contracts"
+    }
+  ]
+}

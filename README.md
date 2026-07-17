@@ -49,6 +49,57 @@ With platform-native automerge, the hosting platform normally merges an enabled 
 | [Preset reference](docs/presets.md) | Behavior and selection guidance for every preset |
 | [Configuration examples](docs/configuration-examples.md) | Complete `renovate.json` examples for Maven, Dockerfile, Docker Compose, and npm |
 
+## Compatibility-aware Kafka message dependencies POC
+
+The opt-in `compatibility-aware-kafka-message-deps` preset keeps Maven dependency extraction but replaces
+release lookup for packages containing `.messagetype.` with the Message Contract Service datasource. It can
+be added after a default preset so that it supersedes `ignore-kafka-message-deps`:
+
+```json
+{
+  "extends": [
+    "github>jeap-admin-ch/jeap-renovate-presets//presets/default",
+    "github>jeap-admin-ch/jeap-renovate-presets//presets/compatibility-aware-kafka-message-deps"
+  ]
+}
+```
+
+The POC confirmed that `currentValue` is available to `defaultRegistryUrlTemplate`, but repository and base
+branch are not. Each adopting repository must therefore override the datasource URL with static context.
+The override below also replaces the POC URL `host.docker.internal:18080` with the deployed service URL:
+
+```json
+{
+  "customDatasources": {
+    "jeap-message-contracts": {
+      "defaultRegistryUrlTemplate": "https://message-contract-service.example/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&repository=my-repository&module=&baseBranch=main&platform=github",
+      "format": "json"
+    }
+  }
+}
+```
+
+Configure authentication in the self-hosted Renovate runner, not in repository configuration or the shared
+preset:
+
+```json
+{
+  "hostRules": [
+    {
+      "matchHost": "message-contract-service.example",
+      "username": "renovate",
+      "password": "{{ secrets.MESSAGE_CONTRACT_SERVICE_PASSWORD }}"
+    }
+  ]
+}
+```
+
+Run the routing POC with Docker:
+
+```bash
+./tests/renovate-compatibility-poc.sh
+```
+
 ## Changes
 
 Change log is available at [CHANGELOG.md](./CHANGELOG.md)
