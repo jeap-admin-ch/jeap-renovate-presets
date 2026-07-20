@@ -38,7 +38,7 @@ if ! grep -q 'jme-create-declaration-command' "$SERVER_LOG"; then
   exit 1
 fi
 
-if ! grep -Eq 'currentValue=1\.0\.0.*repository=configure-me.*baseBranch=main' "$SERVER_LOG"; then
+if ! grep -Eq 'currentValue=1\.0\.0.*appName=configure-me.*environment=PROD' "$SERVER_LOG"; then
   cat "$SERVER_LOG"
   echo "Renovate did not send the configured datasource context" >&2
   exit 1

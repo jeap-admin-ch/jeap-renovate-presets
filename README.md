@@ -64,15 +64,16 @@ be added after a default preset so that it supersedes `ignore-kafka-message-deps
 }
 ```
 
-The POC confirmed that `currentValue` is available to `defaultRegistryUrlTemplate`, but repository and base
-branch are not. Each adopting repository must therefore override the datasource URL with static context.
-The override below also replaces the POC URL `host.docker.internal:18080` with the deployed service URL:
+The POC confirmed that `currentValue` is available to `defaultRegistryUrlTemplate`, but the MCS application name
+is not. Each adopting repository must therefore override the datasource URL with its static `appName`. MCS uses
+the highest uploaded non-SNAPSHOT Maven version for that application. The override below also replaces the POC
+URL `host.docker.internal:18080` with the deployed service URL:
 
 ```json
 {
   "customDatasources": {
     "jeap-message-contracts": {
-      "defaultRegistryUrlTemplate": "https://message-contract-service.example/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&repository=my-repository&module=&baseBranch=main&platform=github",
+      "defaultRegistryUrlTemplate": "https://message-contract-service.example/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&appName=my-application&environment=PROD",
       "format": "json"
     }
   }

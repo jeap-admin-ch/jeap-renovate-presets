@@ -3,7 +3,7 @@
   "description": "Update Kafka message-type dependencies only to versions compatible with PROD",
   "customDatasources": {
     "jeap-message-contracts": {
-      "defaultRegistryUrlTemplate": "http://host.docker.internal:18080/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&repository=configure-me&baseBranch=main",
+      "defaultRegistryUrlTemplate": "http://host.docker.internal:18080/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&appName=configure-me&environment=PROD",
       "format": "json"
     }
   },
