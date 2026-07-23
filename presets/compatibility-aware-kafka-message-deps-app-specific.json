@@ -1,9 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Update Kafka message-type dependencies only to globally compatible PROD versions",
+  "description": "Update Kafka message-type dependencies only to app-specific compatible PROD versions for {{arg0}}",
   "customDatasources": {
     "jeap-message-contracts": {
-      "defaultRegistryUrlTemplate": "{{ variables.JEAP_MCS_PROD_BASE_URL }}/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&environment=PROD",
+      "defaultRegistryUrlTemplate": "{{ variables.JEAP_MCS_PROD_BASE_URL }}/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&environment=PROD&appName={{arg0}}",
       "format": "json"
     }
   },

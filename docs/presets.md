@@ -98,6 +98,18 @@ Ignores unstable Maven releases and timestamp-like versions, including 14-digit 
 
 Disables updates for Maven package names containing `.messagetype.`. Message-type dependencies are interfaces that require coordinated producer and consumer evolution, so they should be upgraded through the applicable compatibility process instead of an uncoordinated Renovate pull request. This preset is included in all default variants.
 
+### `compatibility-aware-kafka-message-deps-app-specific`
+
+Re-enables Maven package names containing `.messagetype.` and replaces normal Maven release lookup with the Message Contract Service datasource configured through the runner's `JEAP_MCS_PROD_BASE_URL` variable. Pass the application's exact MCS `appName` as the preset argument. MCS evaluates newer message-type versions against that application's latest PROD contracts, role, topic, and deployed counterparts. Add this preset after a default preset. This is the recommended mode.
+
+### `compatibility-aware-kafka-message-deps-app-specific-dev`
+
+Provides the same app-specific behavior through the Message Contract Service configured by the runner's `JEAP_MCS_DEV_BASE_URL` variable. Use it for development and end-to-end verification. It accepts the same `appName` argument and evaluates the PROD deployment records held by that service.
+
+### `compatibility-aware-kafka-message-deps`
+
+Re-enables Maven package names containing `.messagetype.` and returns only versions globally compatible with all relevant latest PROD contracts. It sends no `appName` and is an explicit, more conservative fallback. It is never selected automatically by an app-specific preset.
+
 ### `ignore-npm`
 
 Disables the npm manager. Add it when a repository contains Node.js files for tooling or generated assets but npm dependencies are maintained through another process. Omit it when Renovate should update npm dependencies.

@@ -49,57 +49,60 @@ With platform-native automerge, the hosting platform normally merges an enabled 
 | [Preset reference](docs/presets.md) | Behavior and selection guidance for every preset |
 | [Configuration examples](docs/configuration-examples.md) | Complete `renovate.json` examples for Maven, Dockerfile, Docker Compose, and npm |
 
-## Compatibility-aware Kafka message dependencies POC
+## Compatibility-aware Kafka message dependencies
 
-The opt-in `compatibility-aware-kafka-message-deps` preset keeps Maven dependency extraction but replaces
-release lookup for packages containing `.messagetype.` with the Message Contract Service datasource. It can
-be added after a default preset so that it supersedes `ignore-kafka-message-deps`:
+The opt-in compatibility presets keep Maven dependency extraction but route release lookup for packages containing
+`.messagetype.` to the production Message Contract Service (MCS). Add one of them after a default preset so its
+`enabled: true` rule supersedes the default `ignore-kafka-message-deps` rule.
+
+The recommended preset is `compatibility-aware-kafka-message-deps-app-specific`. Teams normally pass only the MCS
+application name and do not override the datasource:
 
 ```json
 {
   "extends": [
-    "github>jeap-admin-ch/jeap-renovate-presets//presets/default",
-    "github>jeap-admin-ch/jeap-renovate-presets//presets/compatibility-aware-kafka-message-deps"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/compatibility-aware-kafka-message-deps-app-specific(my-application)"
   ]
 }
 ```
 
-The POC confirmed that `currentValue` is available to `defaultRegistryUrlTemplate`, but the MCS application name
-is not. Each adopting repository must therefore override the datasource URL with its static `appName`. MCS uses
-the highest uploaded non-SNAPSHOT Maven version for that application. The override below also replaces the POC
-URL `host.docker.internal:18080` with the deployed service URL:
+`appName` is the application's `spring.application.name` represented in its uploaded MCS message contracts. MCS uses
+it to find the application's latest PROD deployment and derive the relevant role and topic from its contracts. There
+is no `appVersion` preset parameter.
+
+Use `compatibility-aware-kafka-message-deps` only as an explicit fallback when no application-specific compatibility
+context is available. It requests versions globally compatible in PROD and sends no `appName`:
 
 ```json
 {
-  "customDatasources": {
-    "jeap-message-contracts": {
-      "defaultRegistryUrlTemplate": "https://message-contract-service.example/api/renovate/message-types/{{packageName}}?currentValue={{currentValue}}&appName=my-application&environment=PROD",
-      "format": "json"
-    }
-  }
-}
-```
-
-Configure authentication in the self-hosted Renovate runner, not in repository configuration or the shared
-preset:
-
-```json
-{
-  "hostRules": [
-    {
-      "matchHost": "message-contract-service.example",
-      "username": "renovate",
-      "password": "{{ secrets.MESSAGE_CONTRACT_SERVICE_PASSWORD }}"
-    }
+  "extends": [
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/compatibility-aware-kafka-message-deps"
   ]
 }
 ```
 
-Run the routing POC with Docker:
+The app-specific preset does not automatically fall back to global compatibility if MCS cannot answer. The production
+presets use the `JEAP_MCS_PROD_BASE_URL` variable configured by the self-hosted Renovate runner; repository
+configurations should not replace it under normal operation.
 
-```bash
-./tests/renovate-compatibility-poc.sh
+For development and end-to-end verification, `compatibility-aware-kafka-message-deps-app-specific-dev` provides the
+same app-specific behavior through the JME DEV MCS endpoint. It still evaluates the `PROD` deployment records held by
+that MCS instance:
+
+```json
+{
+  "extends": [
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/compatibility-aware-kafka-message-deps-app-specific-dev(my-application)"
+  ]
+}
 ```
+
+The self-hosted Renovate runner owns MCS authentication and TLS trust. Teams do not add credentials to repository
+configuration or shared presets. Runner administrators must configure `JEAP_MCS_PROD_BASE_URL` and
+`JEAP_MCS_DEV_BASE_URL` as Renovate variables and provide matching authenticated host rules.
 
 ## Changes
 

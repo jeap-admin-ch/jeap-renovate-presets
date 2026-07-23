@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-07-23
+
+### Added
+
+- Added recommended parameterized application-specific compatibility presets for production and DEV MCS.
+
+### Changed
+
+- Configured the compatibility-aware Kafka message dependency presets through runner-provided Message Contract Service URLs. The global preset remains an explicit fallback.
+
 ## [0.5.0] - 2026-07-23
 
 ### Changed

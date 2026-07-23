@@ -87,6 +87,28 @@ For a versioned Maven application whose project version and existing changelog s
 
 Use a `no-version-bump` variant instead when another release process owns the project version, even though the repository is a Maven application. Select an automerge variant independently based on CI quality.
 
+### Compatibility-aware Kafka message dependencies
+
+Message-type dependencies are ignored by the default presets. To let Renovate update them only after MCS has verified
+compatibility with an application's latest PROD contracts, add the app-specific preset after the selected default:
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/compatibility-aware-kafka-message-deps-app-specific(my-application)"
+  ]
+}
+```
+
+Replace `my-application` with the exact `appName` used by the application's contracts in the Message Contract Service.
+The Message Contract Service resolves the application's current PROD version from its deployment data and derives the
+service's role and topic from that version's contracts. Therefore, no `appVersion`, role, or topic is configured in
+Renovate. Use `compatibility-aware-kafka-message-deps-app-specific-dev` for verification against the DEV Message
+Contract Service, or the more conservative `compatibility-aware-kafka-message-deps` fallback when no application
+context is available.
+
 ### Dockerfile project
 
 For a Dockerfile-only repository with no Maven project version or changelog to maintain, a no-version-bump variant communicates that intent clearly:
