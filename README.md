@@ -4,32 +4,50 @@ Renovate presets for jEAP based projects.
 
 ## Overview
 
-This repository contains presets for managing dependency updates in jEAP-based projects with Renovate.
+[Renovate](https://docs.renovatebot.com/) is an open-source dependency update tool. It scans dependency files such as Maven POMs, Dockerfiles, Docker Compose files, and npm manifests, detects available updates, and opens pull requests with the required version changes and available release information. Its Dependency Dashboard provides a central view of pending, blocked, and open updates.
 
-## Usage
+Regular automated updates help teams adopt security and bug fixes sooner and replace large, infrequent upgrade efforts with smaller, reviewable changes. Teams remain in control: updates can require manual approval and review, or eligible low-risk updates can be merged automatically after CI and branch protection requirements pass.
 
-To use one or more of these presets reference them in your project's `renovate.json` file:
+This repository provides composable jEAP presets that standardize grouping, approval, versioning, changelog, and automerge behavior for Maven, Dockerfile, Docker Compose, npm, and GitHub Actions dependencies. They give platform teams a common starting point while allowing each repository to adapt Renovate to its release process and test coverage.
+
+## Onboarding
+
+Platform teams receive an opt-in pull request titled `feat: Onboarding to renovate (opt-in)`. It adds a `renovate.json` at the repository root. Review the proposed configuration, select the default variant that matches the project, and merge the pull request to enable Renovate.
+
+The planned initial configuration enables the jEAP default behavior and ignores npm dependencies:
 
 ```json
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>jeap-admin-ch/jeap-renovate-presets//presets/default"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
   ]
 }
 ```
 
-## Default presets
+Teams can change `renovate.json` at any time, choose another default variant, or compose the single-purpose presets directly. Renovate applies the change on its next run.
 
-| Preset | Maven project version bump | CHANGELOG.md update | Automerge |
-| --- | --- | --- | --- |
-| `default` | Yes | Yes, if `CHANGELOG.md` exists | No |
-| `default-automerge` | Yes | Yes, if `CHANGELOG.md` exists | Yes |
-| `default-no-version-bump` | No | No | No |
-| `default-no-version-bump-automerge` | No | No | Yes |
+## Choose a default preset
 
-The post-upgrade presets update `CHANGELOG.md` only when a root `CHANGELOG.md` already exists; they never create a new changelog file.
+| Preset | Choose when | Maven project version bump | Existing `CHANGELOG.md` update | Routine update automerge |
+| --- | --- | --- | --- | --- |
+| `default` | The repository is a versioned Maven application and dependency PRs require review | Yes | Yes | No |
+| `default-automerge` | The repository is a versioned Maven application with reliable CI and branch protection | Yes | Yes | Yes |
+| `default-no-version-bump` | Renovate must not change the project version, or the repository is not a Maven application | No | No | No |
+| `default-no-version-bump-automerge` | The project needs no version bump and reliable CI makes routine automerge safe | No | No | Yes |
 
-The `post-upgrade` preset requires Renovate `41.1.0` or newer. It depends on Renovate's `postUpgradeTasks.dataFileTemplate`, `{{{ toJSON upgrades }}}`, and `RENOVATE_POST_UPGRADE_COMMAND_DATA_FILE` support.
+All four variants apply Renovate best practices, ignore unstable Maven versions and Kafka message-type dependencies, and group Maven, Dockerfile, and Docker Compose updates into a routine PR and a major PR. Automerge variants merge only routine `pin`, `pinDigest`, `digest`, `patch`, and `minor` updates; major updates remain manual.
+
+With platform-native automerge, the hosting platform normally merges an enabled pull request as soon as its requirements pass. If platform-native automerge is unavailable and Renovate falls back to its own automerge, the merge may require a subsequent Renovate run; Renovate-managed automerge processes at most one branch or pull request per target branch in each run. See [Renovate automerges take time](https://docs.renovatebot.com/key-concepts/automerge/#renovate-automerges-take-time).
+
+## Documentation
+
+| Topic | Description |
+| --- | --- |
+| [Platform-team onboarding](docs/onboarding.md) | Opt-in flow, Dependency Dashboard, and update pull requests |
+| [Preset reference](docs/presets.md) | Behavior and selection guidance for every preset |
+| [Configuration examples](docs/configuration-examples.md) | Complete `renovate.json` examples for Maven, Dockerfile, Docker Compose, and npm |
 
 ## Changes
 
