@@ -88,8 +88,8 @@ presets use the `JEAP_MCS_PROD_BASE_URL` variable configured by the self-hosted 
 configurations should not replace it under normal operation.
 
 For development and end-to-end verification, `compatibility-aware-kafka-message-deps-app-specific-dev` provides the
-same app-specific behavior through the JME DEV MCS endpoint. It still evaluates the `PROD` deployment records held by
-that MCS instance:
+same app-specific behavior through the DEV Message Contract Service endpoint. It evaluates the latest `DEV` deployment
+records held by that service:
 
 ```json
 {

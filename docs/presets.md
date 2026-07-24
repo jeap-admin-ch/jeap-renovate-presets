@@ -104,7 +104,7 @@ Re-enables Maven package names containing `.messagetype.` and replaces normal Ma
 
 ### `compatibility-aware-kafka-message-deps-app-specific-dev`
 
-Provides the same app-specific behavior through the Message Contract Service configured by the runner's `JEAP_MCS_DEV_BASE_URL` variable. Use it for development and end-to-end verification. It accepts the same `appName` argument and evaluates the PROD deployment records held by that service.
+Provides the same app-specific behavior through the Message Contract Service configured by the runner's `JEAP_MCS_DEV_BASE_URL` variable. Use it for development and end-to-end verification. It accepts the same `appName` argument and evaluates the latest DEV deployment records held by that service.
 
 ### `compatibility-aware-kafka-message-deps`
 
