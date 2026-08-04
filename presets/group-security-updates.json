@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Group vulnerability-fix updates into a single PR per ecosystem",
+  "vulnerabilityAlerts": {
+    "groupName": "security updates",
+    "branchTopic": "security-vulnerabilities"
+  }
+}

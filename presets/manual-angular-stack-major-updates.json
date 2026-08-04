@@ -1,0 +1,42 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Keep the Angular and Quadrel frontend stack on its current major versions",
+  "packageRules": [
+    {
+      "description": "Require manual major upgrades of the coupled Angular and Quadrel stack",
+      "matchManagers": ["npm"],
+      "matchPackageNames": [
+        "@angular/**",
+        "@angular-devkit/**",
+        "@angular-eslint/**",
+        "@angular-builders/**",
+        "@schematics/angular",
+        "@quadrel-enterprise-ui/**",
+        "@ngx-translate/**",
+        "typescript"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "packageRules": [
+      {
+        "description": "Keep security fixes for the coupled Angular and Quadrel stack on the current major versions",
+        "matchManagers": ["npm"],
+        "matchPackageNames": [
+          "@angular/**",
+          "@angular-devkit/**",
+          "@angular-eslint/**",
+          "@angular-builders/**",
+          "@schematics/angular",
+          "@quadrel-enterprise-ui/**",
+          "@ngx-translate/**",
+          "typescript"
+        ],
+        "matchUpdateTypes": ["major"],
+        "enabled": false
+      }
+    ]
+  }
+}

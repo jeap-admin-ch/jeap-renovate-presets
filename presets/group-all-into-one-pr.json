@@ -5,11 +5,14 @@
     {
       "groupName": "All dependencies",
       "groupSlug": "all",
-      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
       "matchManagers": ["*"],
       "matchDepTypes": ["*"]
     }
   ],
+  "vulnerabilityAlerts": {
+    "groupName": "All dependencies",
+    "branchTopic": "all"
+  },
   "prHourlyLimit": 1,
   "prConcurrentLimit": 1
 }

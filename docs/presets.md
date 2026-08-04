@@ -16,11 +16,10 @@ The four default variants share the baseline defined by `default-no-version-bump
 - ignores unstable Maven versions and Kafka message-type dependencies;
 - requires Dependency Dashboard approval for Maven major updates, except jEAP major updates;
 - retains jEAP and non-jEAP labels from the fine-grained Maven rules;
-- groups all routine Maven, Dockerfile, and Docker Compose updates into one pull request;
-- groups all major Maven, Dockerfile, and Docker Compose updates into another pull request; and
-- limits new pull request creation to one per hour.
+- groups updates from all managers and dependency types into one pull request; and
+- limits both hourly and concurrent pull requests to one.
 
-The cross-manager grouping rules are applied after the Maven-specific grouping rules. Their group names therefore win: current defaults do not create separate jEAP minor, jEAP major, plugin, and non-jEAP dependency pull requests. The Maven-specific rules still supply labels and dashboard approval behavior.
+The all-dependencies grouping rule is applied after the manager-specific rules. Its group name therefore wins: current defaults do not create separate routine, major, security, jEAP, plugin, or ecosystem pull requests. Earlier rules still supply labels and dashboard approval behavior.
 
 ### `default`
 
@@ -30,7 +29,7 @@ The script skips the project version bump when no root `pom.xml` exists and neve
 
 ### `default-automerge`
 
-Choose this instead of `default` only when CI tests and required status checks can reliably detect regressions. It adds `automerge` to `default`, so routine Maven, Dockerfile, and Docker Compose updates can be merged automatically. Project version bump and existing changelog updates remain enabled. Major updates still require manual merging.
+Choose this instead of `default` only when CI tests and required status checks can reliably detect regressions. It adds `automerge` to `default`. The grouped pull request is merged automatically only when every included update is an eligible routine Maven, Dockerfile, or Docker Compose update. Project version bump and existing changelog updates remain enabled. A major update or an update from another manager keeps the complete pull request manual.
 
 ### `default-no-version-bump`
 
@@ -38,7 +37,7 @@ Choose this when Renovate must not change the Maven project version or `CHANGELO
 
 ### `default-no-version-bump-automerge`
 
-Choose this when no Maven project version or changelog update is wanted and the repository has reliable CI for automatic routine updates. It combines `default-no-version-bump` with `automerge`. Major updates remain manual.
+Choose this when no Maven project version or changelog update is wanted and the repository has reliable CI for automatic routine updates. It combines `default-no-version-bump` with `automerge`. The grouped pull request is merged automatically only when every included update is eligible; otherwise the complete pull request remains manual.
 
 ## Single-purpose presets
 
@@ -114,6 +113,12 @@ Re-enables Maven package names containing `.messagetype.` and returns only versi
 
 Disables the npm manager. Add it when a repository contains Node.js files for tooling or generated assets but npm dependencies are maintained through another process. Omit it when Renovate should update npm dependencies.
 
+### `manual-angular-stack-major-updates`
+
+Disables Renovate major updates for the coupled Angular frontend stack: Angular, Angular DevKit, Angular ESLint, Angular Builders, Angular schematics, Quadrel Enterprise UI, ngx-translate, and TypeScript. The same restriction applies to vulnerability-alert updates, so a security fix that requires crossing a configured major version is not proposed automatically. Minor and patch updates remain enabled.
+
+Add this preset to Angular repositories whose major frontend upgrades are performed as coordinated manual migrations. It is not included in the default variants. When the repository configuration also contains `ignore-npm`, remove `ignore-npm`; otherwise Renovate cannot process the permitted minor and patch npm updates.
+
 ### `ignore-docker-compose`
 
 Disables image updates detected in Docker Compose files. Add it when Compose files are examples, local-development fixtures, generated files, or otherwise not intended for automated image updates. It does not disable Dockerfile updates.
@@ -124,7 +129,7 @@ Groups all GitHub Actions updates into one pull request and pins action referenc
 
 ### `group-all-into-one-pr`
 
-Extends `config:recommended`, groups major, minor, patch, pin, and digest updates from every manager and dependency type into one pull request, and limits both hourly and concurrent pull requests to one. Choose it only for small repositories where one mixed update pull request is preferable to manager- and risk-based separation. Do not combine it with a default variant unless the resulting rule precedence has been deliberately reviewed.
+Extends `config:recommended`, groups every update type from every manager and dependency type into one pull request, and limits both hourly and concurrent pull requests to one. It is included in all four default variants. Use it independently only when the other default behavior is not required.
 
 ## Related
 

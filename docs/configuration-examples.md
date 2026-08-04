@@ -5,7 +5,7 @@ Place `renovate.json` at the repository root. Configure a repository in two step
 1. Choose one of the four default variants based on project versioning, changelog, and automerge requirements.
 2. Add manager-specific presets such as `ignore-npm` or `ignore-docker-compose` only when Renovate must ignore those files.
 
-The default variant is not selected by dependency manager. All four variants detect Maven, Dockerfile, and Docker Compose dependencies. The `no-version-bump` variants are for any repository where Renovate must not change the Maven project version or `CHANGELOG.md`; they are not Docker-specific presets.
+The default variant is not selected by dependency manager. All four variants detect supported dependencies and group updates from all managers and dependency types into one pull request. The `no-version-bump` variants are for any repository where Renovate must not change the Maven project version or `CHANGELOG.md`; they are not Docker-specific presets.
 
 ## Choose a default configuration
 
@@ -27,7 +27,7 @@ Choose `default` when Renovate should bump the Maven project version, update an 
 
 ### `default-automerge`
 
-Choose `default-automerge` when the same version and changelog updates are required and reliable CI makes automatic routine Maven, Dockerfile, and Docker Compose updates safe. Major updates remain manual.
+Choose `default-automerge` when the same version and changelog updates are required and reliable CI makes automatic routine Maven, Dockerfile, and Docker Compose updates safe. The grouped pull request is merged automatically only when every included update is eligible; major updates or updates from other managers keep it manual.
 
 ```json
 {
@@ -55,7 +55,7 @@ Choose `default-no-version-bump` when Renovate must not change the Maven project
 
 ### `default-no-version-bump-automerge`
 
-Choose `default-no-version-bump-automerge` when no Maven project version or changelog changes are wanted and reliable CI makes automatic routine Maven, Dockerfile, and Docker Compose updates safe. Major updates remain manual.
+Choose `default-no-version-bump-automerge` when no Maven project version or changelog changes are wanted and reliable CI makes automatic routine Maven, Dockerfile, and Docker Compose updates safe. The grouped pull request is merged automatically only when every included update is eligible; major updates or updates from other managers keep it manual.
 
 ```json
 {
@@ -124,7 +124,7 @@ For a Dockerfile-only repository with no Maven project version or changelog to m
 }
 ```
 
-This updates Dockerfile images while explicitly excluding Compose and npm updates. Remove `ignore-docker-compose` when both Dockerfile and Compose images should be maintained. If a Maven application also contains a Dockerfile and dependency updates should bump its project version, use `default` rather than `default-no-version-bump`. The default grouping separates routine and major Maven and Docker updates.
+This updates Dockerfile images while explicitly excluding Compose and npm updates. Remove `ignore-docker-compose` when both Dockerfile and Compose images should be maintained. If a Maven application also contains a Dockerfile and dependency updates should bump its project version, use `default` rather than `default-no-version-bump`. The default grouping combines all enabled updates into one pull request.
 
 ### Docker Compose project
 
@@ -156,7 +156,24 @@ For an npm-only project, omit `ignore-npm`. A no-version-bump default communicat
 }
 ```
 
-The jEAP routine grouping and automerge rules do not match npm. npm updates therefore follow Renovate's best-practice defaults unless the repository adds npm-specific `packageRules`. In a mixed Maven and npm repository, select the default variant based on Maven project versioning, omit `ignore-npm`, and remove `ignore-docker-compose` if Compose image dependencies should also be updated.
+The default all-dependencies grouping includes npm updates. The provided automerge rule does not match npm, so a grouped pull request containing npm updates remains manual unless the repository adds its own npm-specific automerge rule. In a mixed Maven and npm repository, select the default variant based on Maven project versioning, omit `ignore-npm`, and remove `ignore-docker-compose` if Compose image dependencies should also be updated.
+
+### Angular project with manual stack migrations
+
+For an Angular repository where minor and patch updates should remain automated but major Angular-stack migrations are performed manually, add `manual-angular-stack-major-updates` and do not include `ignore-npm`:
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/default-no-version-bump",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-docker-compose"
+  ]
+}
+```
+
+This blocks Renovate major updates for Angular, Angular DevKit, Angular ESLint, Angular Builders, Angular schematics, Quadrel Enterprise UI, ngx-translate, and TypeScript, including vulnerability-alert updates that require a new major version. Minor and patch updates remain enabled and participate in the default all-dependencies pull request.
 
 ## Custom composition
 

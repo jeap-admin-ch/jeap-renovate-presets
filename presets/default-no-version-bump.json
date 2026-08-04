@@ -11,7 +11,9 @@
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-deps-minor-patch",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-non-jeap-maven-plugins-minor-patch",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-routine-maven-docker",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-major-maven-docker"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-major-maven-docker",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-security-updates",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-all-into-one-pr"
   ],
   "prHourlyLimit": 1
 }

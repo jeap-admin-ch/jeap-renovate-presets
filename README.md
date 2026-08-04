@@ -37,7 +37,7 @@ Teams can change `renovate.json` at any time, choose another default variant, or
 | `default-no-version-bump` | Renovate must not change the project version, or the repository is not a Maven application | No | No | No |
 | `default-no-version-bump-automerge` | The project needs no version bump and reliable CI makes routine automerge safe | No | No | Yes |
 
-All four variants apply Renovate best practices, ignore unstable Maven versions and Kafka message-type dependencies, and group Maven, Dockerfile, and Docker Compose updates into a routine PR and a major PR. Automerge variants merge only routine `pin`, `pinDigest`, `digest`, `patch`, and `minor` updates; major updates remain manual.
+All four variants apply Renovate best practices, ignore unstable Maven versions and Kafka message-type dependencies, and group updates from all managers and dependency types into one pull request. Automerge variants merge the grouped pull request only when every included update is eligible for automerge. A major update or an update from a manager outside Maven, Dockerfile, and Docker Compose keeps the complete pull request manual.
 
 With platform-native automerge, the hosting platform normally merges an enabled pull request as soon as its requirements pass. If platform-native automerge is unavailable and Renovate falls back to its own automerge, the merge may require a subsequent Renovate run; Renovate-managed automerge processes at most one branch or pull request per target branch in each run. See [Renovate automerges take time](https://docs.renovatebot.com/key-concepts/automerge/#renovate-automerges-take-time).
 
