@@ -13,7 +13,8 @@
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-routine-maven-docker",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-major-maven-docker",
     "local>jeap-admin-ch/jeap-renovate-presets//presets/group-security-updates",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-all-into-one-pr"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/group-all-into-one-pr",
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/disable-github-actions-digest-pinning"
   ],
   "prHourlyLimit": 1
 }
