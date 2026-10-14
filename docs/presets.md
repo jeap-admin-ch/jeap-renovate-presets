@@ -59,7 +59,15 @@ Runs one branch-level task for Maven, Maven Wrapper, Dockerfile, and Docker Comp
 
 If a root `CHANGELOG.md` exists and the Maven project version can be read, the task adds dependency update entries to that version's `Dependencies` section. It does not create `CHANGELOG.md` and does nothing for branches containing only unrelated managers such as npm.
 
-This preset requires Renovate 41.1.0 or newer and a runner that permits the configured post-upgrade commands. The runner also needs `curl`, Node.js, Maven, and network access to the script hosted in this repository.
+For branches containing Maven or Maven Wrapper updates, the task also runs `spotless:apply` if Spotless is configured. It reads the effective POMs of the root Maven reactor and selects only projects with `com.diffplug.spotless:spotless-maven-plugin` in `build/plugins`, including inherited configuration and active profiles. A declaration only in `pluginManagement` or an inactive profile does not enable formatting. It uses the root `mvnw` if present, otherwise `mvn`, and runs once for the selected projects with `-pl`. No module names need to be configured in `renovate.json`. Formatting also runs without a changelog; failures resolving the effective POM or running Spotless fail the task rather than being treated as an absent plugin. Docker-only update branches skip formatting.
+
+The file filters retain Maven POM and changelog changes and include `**/*.java`. If a project's Spotless configuration formats other file types, extend `postUpgradeTasks.fileFilters` in that repository and retain all existing patterns. The `default-no-version-bump` variants do not include this task or automatic formatting.
+
+This preset requires Renovate 41.1.0 or newer and a runner that permits the configured post-upgrade commands. The runner also needs Bash, `curl`, Node.js, Python 3 (for XML parsing), Maven, a JDK compatible with the project's formatter, and network access to the script, Maven repositories and any wrapper distribution. Maven repository credentials and required profiles must be available in the runner environment.
+
+The existing three commands in this preset remain unchanged. If they are already permitted, adding Spotless inside the script requires no additional `allowedCommands` entry. Runner administrators manage [`allowedCommands`](https://docs.renovatebot.com/self-hosted-configuration/#allowedcommands) in the self-hosted configuration; repositories cannot grant themselves permission to execute arbitrary commands.
+
+Teams can instead configure their own formatting command, but must retain the existing commands and file filters when overriding those arrays. Keep [`executionMode: "branch"`](https://docs.renovatebot.com/configuration-options/#postupgradetasks) so grouped updates do not repeat the version bump. A direct command such as `./mvnw -B spotless:apply -pl wvs-condition-service` needs its own matching runner allowlist entry. With the automatic detection above, that additional command is unnecessary.
 
 ### `group-routine-maven-docker`
 

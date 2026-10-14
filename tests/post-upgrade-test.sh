@@ -59,6 +59,19 @@ write_mvn_stub() {
   cat > bin/mvn <<'EOF'
 #!/bin/bash
 printf '%s\n' "$*" >> mvn.log
+if [[ " $* " == *" help:effective-pom "* ]]; then
+  [ "${FAIL_EFFECTIVE_POM:-false}" != true ] || exit 1
+  for arg in "$@"; do
+    if [[ "$arg" == -Doutput=* ]]; then
+      cp "${EFFECTIVE_POM_FIXTURE:-pom.xml}" "${arg#-Doutput=}"
+    fi
+  done
+fi
+if [[ " $* " == *" spotless:apply "* ]]; then
+  [ "${FAIL_SPOTLESS:-false}" != true ] || exit 1
+  mkdir -p src/main/java
+  echo '// formatted' > src/main/java/Example.java
+fi
 EOF
   chmod +x bin/mvn
   export PATH="$PWD/bin:$PATH"
@@ -79,6 +92,7 @@ run_case() {
   cd "$dir"
   export PATH_ORIGINAL="${PATH_ORIGINAL:-$PATH}"
   export PATH="$PATH_ORIGINAL"
+  unset EFFECTIVE_POM_FIXTURE FAIL_EFFECTIVE_POM FAIL_SPOTLESS
 }
 
 run_case maven_update
@@ -156,6 +170,7 @@ cat > upgrades.json <<'EOF'
 EOF
 run_post_upgrade
 assert_file_missing CHANGELOG.md
+assert_file_not_contains mvn.log 'spotless:apply'
 
 run_case irrelevant_upgrade
 write_pom "6.0.0-SNAPSHOT"
@@ -184,6 +199,109 @@ write_mvn_stub
 cp CHANGELOG.md before.md
 run_post_upgrade_missing_data_file
 cmp -s before.md CHANGELOG.md || fail "Expected missing data file to leave CHANGELOG.md unchanged"
+assert_file_missing mvn.log
+
+write_maven_upgrade() {
+  echo '[{"manager":"maven","updateType":"patch"}]' > upgrades.json
+}
+
+write_spotless_reactor() {
+  export EFFECTIVE_POM_FIXTURE="$PWD/effective-pom.xml"
+  cat > "$EFFECTIVE_POM_FIXTURE" <<'EOF'
+<projects>
+  <project xmlns="http://maven.apache.org/POM/4.0.0">
+    <groupId>example</groupId><artifactId>parent</artifactId>
+    <build><pluginManagement><plugins><plugin>
+      <groupId>com.diffplug.spotless</groupId><artifactId>spotless-maven-plugin</artifactId>
+    </plugin></plugins></pluginManagement></build>
+  </project>
+  <project xmlns="http://maven.apache.org/POM/4.0.0">
+    <groupId>example</groupId><artifactId>wvs-condition-service</artifactId>
+    <build><plugins><plugin>
+      <groupId>com.diffplug.spotless</groupId><artifactId>spotless-maven-plugin</artifactId>
+    </plugin></plugins></build>
+  </project>
+  <project xmlns="http://maven.apache.org/POM/4.0.0">
+    <groupId>example</groupId><artifactId>inherited-plugin</artifactId>
+    <build><plugins><plugin>
+      <groupId>com.diffplug.spotless</groupId><artifactId>spotless-maven-plugin</artifactId>
+    </plugin></plugins></build>
+  </project>
+  <project xmlns="http://maven.apache.org/POM/4.0.0">
+    <groupId>example</groupId><artifactId>inactive-profile</artifactId>
+    <profiles><profile><build><plugins><plugin>
+      <groupId>com.diffplug.spotless</groupId><artifactId>spotless-maven-plugin</artifactId>
+    </plugin></plugins></build></profile></profiles>
+  </project>
+</projects>
+EOF
+}
+
+run_case spotless_modules_without_changelog
+write_pom "1.0.0"
+write_mvn_stub
+write_maven_upgrade
+write_spotless_reactor
+run_post_upgrade
+assert_file_contains mvn.log '-B spotless:apply -pl example:wvs-condition-service,example:inherited-plugin'
+assert_file_not_contains mvn.log 'example:parent'
+assert_file_not_contains mvn.log 'example:inactive-profile'
+assert_file_contains src/main/java/Example.java '// formatted'
+assert_file_missing CHANGELOG.md
+
+run_case spotless_single_project_wrapper
+write_pom "1.0.0"
+write_changelog
+write_mvn_stub
+echo '[{"manager":"maven-wrapper","updateType":"patch"}]' > upgrades.json
+cat > mvnw <<'EOF'
+#!/bin/bash
+echo "$*" >> wrapper.log
+exec mvn "$@"
+EOF
+# An executable bit is not required for the wrapper.
+export EFFECTIVE_POM_FIXTURE="$PWD/effective-pom.xml"
+cat > "$EFFECTIVE_POM_FIXTURE" <<'EOF'
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <groupId>example</groupId><artifactId>service</artifactId>
+  <build><plugins><plugin>
+    <groupId>com.diffplug.spotless</groupId><artifactId>spotless-maven-plugin</artifactId>
+  </plugin></plugins></build>
+</project>
+EOF
+run_post_upgrade
+assert_file_contains wrapper.log 'help:effective-pom'
+assert_file_contains wrapper.log '-B spotless:apply -pl example:service'
+
+run_case spotless_failure
+write_pom "1.0.0"
+write_mvn_stub
+write_maven_upgrade
+write_spotless_reactor
+export FAIL_SPOTLESS=true
+if run_post_upgrade; then fail 'Spotless errors must fail the task'; fi
+
+run_case effective_pom_failure
+write_pom "1.0.0"
+write_mvn_stub
+write_maven_upgrade
+export FAIL_EFFECTIVE_POM=true
+if run_post_upgrade; then fail 'Effective POM errors must fail the task'; fi
+assert_file_not_contains mvn.log 'spotless:apply'
+
+run_case docker_only_skips_spotless
+write_pom "1.0.0"
+write_mvn_stub
+write_spotless_reactor
+echo '[{"manager":"dockerfile","updateType":"patch"}]' > upgrades.json
+run_post_upgrade
+assert_file_not_contains mvn.log 'help:effective-pom'
+assert_file_not_contains mvn.log 'spotless:apply'
+
+run_case no_root_pom
+write_mvn_stub
+write_maven_upgrade
+run_post_upgrade
 assert_file_missing mvn.log
 
 echo "post-upgrade tests ok"

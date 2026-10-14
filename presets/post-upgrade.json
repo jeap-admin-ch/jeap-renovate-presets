@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Bump Maven project version and update CHANGELOG.md (only if one exists) after Maven, Dockerfile, and Docker Compose dependency updates. Runs as a single branch-level postUpgradeTask. Version bump is skipped for projects without a pom.xml.",
+  "description": "Bump Maven project version and update existing CHANGELOG.md after Maven and Docker updates. Apply Spotless where configured after Maven/Wrapper updates. Runs once per branch; Maven steps require a root pom.xml.",
   "postUpgradeTasks": {
     "executionMode": "branch",
     "dataFileTemplate": "{{{ toJSON upgrades }}}",
@@ -12,7 +12,8 @@
     "fileFilters": [
       "pom.xml",
       "**/pom.xml",
-      "CHANGELOG.md"
+      "CHANGELOG.md",
+      "**/*.java"
     ]
   }
 }

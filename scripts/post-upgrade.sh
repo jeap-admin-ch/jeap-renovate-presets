@@ -8,6 +8,7 @@ set -euo pipefail
 #   1. Bumps the Maven project version in pom.xml (if present) based on the highest
 #      update type across all upgrades (major > minor > patch/digest/pin).
 #   2. Adds a CHANGELOG.md entry for every dependency update (if CHANGELOG.md exists).
+#   3. Applies Spotless in modules that configure it for Maven/Wrapper updates.
 #
 # This script handles maven, maven-wrapper, dockerfile, and docker-compose updates.
 # If no CHANGELOG.md exists in the project root, the changelog step is skipped without error.
@@ -22,7 +23,8 @@ if [ ! -f "$UPGRADES_FILE" ]; then
 fi
 
 RELEVANT_UPGRADES_FILE=$(mktemp)
-trap 'rm -f "$RELEVANT_UPGRADES_FILE"' EXIT
+EFFECTIVE_POM=$(mktemp)
+trap 'rm -f "$RELEVANT_UPGRADES_FILE" "$EFFECTIVE_POM"' EXIT
 
 node - "$UPGRADES_FILE" "$RELEVANT_UPGRADES_FILE" <<'NODE'
 const fs = require("fs");
@@ -73,6 +75,45 @@ if [ -f "pom.xml" ]; then
         -DgenerateBackupPoms=false -B -q
       ;;
   esac
+fi
+
+# -- Optional Spotless formatting (independent of CHANGELOG.md) --------------
+
+if [ -f "pom.xml" ] && node -e '
+  const fs = require("fs");
+  const upgrades = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+  process.exit(upgrades.some(u => ["maven", "maven-wrapper"].includes(u.manager)) ? 0 : 1);
+' "$UPGRADES_FILE"; then
+  MAVEN=(mvn)
+  if [ -f "./mvnw" ]; then
+    MAVEN=(bash ./mvnw)
+  fi
+
+  # The effective reactor model includes inherited plugins and active profiles.
+  # A declaration in pluginManagement alone must not activate the formatter.
+  "${MAVEN[@]}" -B -q help:effective-pom "-Doutput=$EFFECTIVE_POM"
+  SPOTLESS_PROJECTS=$(python3 - "$EFFECTIVE_POM" <<'PYTHON'
+import sys
+import xml.etree.ElementTree as ET
+
+root = ET.parse(sys.argv[1]).getroot()
+projects = [root] if root.tag.split('}')[-1] == 'project' else root.findall('{*}project')
+selected = []
+for project in projects:
+    for plugin in project.findall('{*}build/{*}plugins/{*}plugin'):
+        if (plugin.findtext('{*}groupId') == 'com.diffplug.spotless'
+                and plugin.findtext('{*}artifactId') == 'spotless-maven-plugin'):
+            selected.append(project.findtext('{*}groupId') + ':' + project.findtext('{*}artifactId'))
+            break
+print(','.join(selected))
+PYTHON
+  )
+  if [ -n "$SPOTLESS_PROJECTS" ]; then
+    echo "Applying Spotless to: $SPOTLESS_PROJECTS"
+    "${MAVEN[@]}" -B spotless:apply -pl "$SPOTLESS_PROJECTS"
+  else
+    echo "No active Spotless plugin found - skipping formatting."
+  fi
 fi
 
 # -- CHANGELOG update (only if CHANGELOG.md is present) ----------------------
