@@ -14,17 +14,21 @@ This repository provides composable jEAP presets that standardize grouping, appr
 
 Platform teams receive an opt-in pull request titled `feat: Onboarding to renovate (opt-in)`. It adds a `renovate.json` at the repository root. Review the proposed configuration, select the default variant that matches the project, and merge the pull request to enable Renovate.
 
-The planned initial configuration enables the jEAP default behavior and ignores npm dependencies:
+The recommended starting configuration enables npm maintenance and uses `manual-angular-stack-major-updates` to keep major Angular-stack migrations manual:
 
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates"
   ]
 }
 ```
+
+Normal npm updates remain enabled, including updates to Angular companion packages such as `@angular/animations`. The Angular preset restricts major updates for its matched frontend stack, not for every npm package, and does not enable npm automerge.
+
+If an existing onboarding proposal contains `ignore-npm`, replace it with `manual-angular-stack-major-updates` to adopt this recommendation. Use `ignore-npm` only when npm dependencies are maintained through another process: it disables npm extraction and all Renovate npm updates, including security updates. It does not disable GitHub Dependabot alerts or other security scanners.
 
 Teams can change `renovate.json` at any time, choose another default variant, or compose the single-purpose presets directly. Renovate applies the change on its next run.
 

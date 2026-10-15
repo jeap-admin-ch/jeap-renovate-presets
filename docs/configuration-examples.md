@@ -3,13 +3,15 @@
 Place `renovate.json` at the repository root. Configure a repository in two steps:
 
 1. Choose one of the four default variants based on project versioning, changelog, and automerge requirements.
-2. Add manager-specific presets such as `ignore-npm` or `ignore-docker-compose` only when Renovate must ignore those files.
+2. Add `manual-angular-stack-major-updates` for the recommended npm maintenance policy. Add exclusion presets such as `ignore-npm` or `ignore-docker-compose` only when another process maintains those dependencies.
 
 The default variant is not selected by dependency manager. All four variants detect supported dependencies and group updates from all managers and dependency types into one pull request. The `no-version-bump` variants are for any repository where Renovate must not change the Maven project version or `CHANGELOG.md`; they are not Docker-specific presets.
 
 ## Choose a default configuration
 
-The platform's planned onboarding configurations include `ignore-npm`. Remove that preset when Renovate should update npm dependencies.
+The recommended configurations use `manual-angular-stack-major-updates` instead of `ignore-npm`. This leaves ordinary npm updates enabled while restricting major upgrades for the matched Angular frontend stack. Other npm packages remain eligible for updates, including majors unless another rule restricts them. These examples do not enable npm automerge.
+
+An existing platform-generated onboarding proposal may still contain `ignore-npm`; replace it to adopt this recommendation. Keeping `ignore-npm` disables npm extraction and all Renovate npm updates, including security updates, even when the Angular preset is also present.
 
 ### `default`
 
@@ -20,7 +22,7 @@ Choose `default` when Renovate should bump the Maven project version, update an 
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates"
   ]
 }
 ```
@@ -34,7 +36,7 @@ Choose `default-automerge` when the same version and changelog updates are requi
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default-automerge",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates"
   ]
 }
 ```
@@ -48,7 +50,7 @@ Choose `default-no-version-bump` when Renovate must not change the Maven project
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default-no-version-bump",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates"
   ]
 }
 ```
@@ -62,7 +64,7 @@ Choose `default-no-version-bump-automerge` when no Maven project version or chan
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default-no-version-bump-automerge",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates"
   ]
 }
 ```
@@ -73,14 +75,14 @@ Renovate detects supported dependency files automatically. The examples below sh
 
 ### Maven application
 
-For a versioned Maven application whose project version and existing changelog should follow dependency updates, use the planned `default` onboarding configuration:
+For a versioned Maven application whose project version and existing changelog should follow dependency updates, use the recommended `default` configuration:
 
 ```json
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>jeap-admin-ch/jeap-renovate-presets//presets/default",
-    "local>jeap-admin-ch/jeap-renovate-presets//presets/ignore-npm"
+    "local>jeap-admin-ch/jeap-renovate-presets//presets/manual-angular-stack-major-updates"
   ]
 }
 ```

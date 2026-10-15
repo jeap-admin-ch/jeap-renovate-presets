@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2026-10-15
+
+### Fixed
+
+- `ignore-npm` now disables npm dependency extraction instead of using an update-level package rule. This also excludes vulnerability-driven npm updates that previously bypassed the rule; consumers using this preset will no longer receive Renovate npm security updates.
+
+### Changed
+
+- Recommend `manual-angular-stack-major-updates` instead of `ignore-npm` in the default configuration examples and onboarding guidance, keeping normal npm maintenance enabled.
+- Document the explicit npm opt-out, its effect on Renovate dependency reporting, and migration from existing onboarding configurations.
+
 ## [0.8.0] - 2026-10-14
 
 ### Added
