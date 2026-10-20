@@ -84,10 +84,10 @@ if [ -f "pom.xml" ] && node -e '
   const upgrades = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
   process.exit(upgrades.some(u => ["maven", "maven-wrapper"].includes(u.manager)) ? 0 : 1);
 ' "$UPGRADES_FILE"; then
+  # Use the runner's Maven like the version bump above, not ./mvnw: the wrapper downloads
+  # its distribution from the URL in maven-wrapper.properties, which runners without
+  # direct internet access cannot reach.
   MAVEN=(mvn)
-  if [ -f "./mvnw" ]; then
-    MAVEN=(bash ./mvnw)
-  fi
 
   # The effective reactor model includes inherited plugins and active profiles.
   # A declaration in pluginManagement alone must not activate the formatter.
