@@ -249,7 +249,7 @@ assert_file_not_contains mvn.log 'example:inactive-profile'
 assert_file_contains src/main/java/Example.java '// formatted'
 assert_file_missing CHANGELOG.md
 
-run_case spotless_single_project_wrapper
+run_case spotless_ignores_wrapper
 write_pom "1.0.0"
 write_changelog
 write_mvn_stub
@@ -259,7 +259,6 @@ cat > mvnw <<'EOF'
 echo "$*" >> wrapper.log
 exec mvn "$@"
 EOF
-# An executable bit is not required for the wrapper.
 export EFFECTIVE_POM_FIXTURE="$PWD/effective-pom.xml"
 cat > "$EFFECTIVE_POM_FIXTURE" <<'EOF'
 <project xmlns="http://maven.apache.org/POM/4.0.0">
@@ -270,8 +269,9 @@ cat > "$EFFECTIVE_POM_FIXTURE" <<'EOF'
 </project>
 EOF
 run_post_upgrade
-assert_file_contains wrapper.log 'help:effective-pom'
-assert_file_contains wrapper.log '-B spotless:apply -pl example:service'
+assert_file_contains mvn.log 'help:effective-pom'
+assert_file_contains mvn.log '-B spotless:apply -pl example:service'
+assert_file_missing wrapper.log
 
 run_case spotless_failure
 write_pom "1.0.0"
