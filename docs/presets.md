@@ -14,6 +14,7 @@ The four default variants share the baseline defined by `default-no-version-bump
 
 - extends Renovate's `config:best-practices`;
 - ignores unstable Maven versions and Kafka message-type dependencies;
+- applies a 3-day cooldown to updates for upstream dependencies, excluding jEAP Maven dependencies and vulnerability fixes;
 - requires Dependency Dashboard approval for Maven major updates, except jEAP major updates;
 - retains jEAP and non-jEAP labels from the fine-grained Maven rules;
 - groups updates from all managers and dependency types into one pull request; and
@@ -97,6 +98,22 @@ Matches minor and patch updates for non-jEAP Maven build plugins. It groups them
 
 Requires Dependency Dashboard approval and adds `maven` and `major` labels for all Maven major updates. Combine it with `group-jeap-major` when jEAP majors should be exempt: the later jEAP-specific rule disables approval for those coordinates.
 
+### `minimum-release-age`
+
+Applies a 3-day cooldown to updates, delaying the pull request until the release has been available for that long. This reduces exposure to supply chain attacks where a compromised maintainer or account publishes a malicious release that is pulled soon after.
+
+The cooldown excludes jEAP Maven dependencies (group ID `ch.admin.bit.jeap`), consistent with the jEAP rules in the other presets: they are maintained by the jEAP team and should be adopted without delay. Other `ch.admin` dependencies are subject to the cooldown. This preset is included in all default variants.
+
+Vulnerability fixes are also excluded from the cooldown, since a security fix should be proposed immediately rather than waiting out the delay. The exemption only applies to vulnerabilities Renovate knows about, so the preset enables `osvVulnerabilityAlerts`: Renovate checks dependencies against osv.dev itself, independent of whether GitHub Dependabot alerts are enabled for the repository and readable by Renovate. As a result, teams may receive additional security pull requests. The exemption is a deliberate trade-off: a security update proposes the lowest version that fixes the vulnerability (Renovate's default `vulnerabilityFixStrategy: lowest`), not the newest release, so an attacker would have to compromise exactly that fixed version. A small residual risk remains when the fix itself was released only recently.
+
+The explicit `vulnerabilityAlerts.minimumReleaseAge: "0 days"` is technically redundant: Renovate's built-in `vulnerabilityAlerts` default already sets `minimumReleaseAge` to `null`, and Renovate force-applies the `vulnerabilityAlerts` settings to vulnerability-fix updates, so they override package rules such as this cooldown. The setting is kept to state the intent and so the exemption keeps working if Renovate changes that default.
+
+Limitations:
+
+- npm is not covered by this preset. `config:best-practices` already applies the same 3-day cooldown to npm through `security:minimumReleaseAgeNpm`, together with Renovate's maintained opt-outs for update types without release timestamps. If you use `minimum-release-age` without `config:best-practices`, npm updates are not delayed.
+- Renovate obtains release timestamps for Docker images only from Docker Hub. Images pulled through another registry, such as a registry proxy, have no timestamp and are therefore proposed without delay (`minimumReleaseAgeBehaviour: timestamp-optional`) instead of staying pending indefinitely. The cooldown does not protect these images.
+- `replacement`, `pin`, `bump`, `lockfileUpdate`, and `rollback` updates never carry a release timestamp and are proposed without delay, matching Renovate's own `security:minimumReleaseAge*` presets.
+
 ### `ignore-unstable-maven-deps`
 
 Ignores unstable Maven releases and timestamp-like versions, including 14-digit suffixes and Maven timestamp/build-number suffixes. Use it to prevent snapshots and repository-generated unstable builds from being proposed as normal upgrades.
@@ -108,6 +125,8 @@ Disables updates for Maven package names containing `.messagetype.`. Message-typ
 ### `compatibility-aware-kafka-message-deps-app-specific`
 
 Re-enables Maven package names containing `.messagetype.` and replaces normal Maven release lookup with the Message Contract Service datasource configured through the runner's `JEAP_MCS_PROD_BASE_URL` variable. Pass the application's exact MCS `appName` as the preset argument. MCS evaluates newer message-type versions against that application's latest PROD contracts, role, topic, and deployed counterparts. Add this preset after a default preset. This is the recommended mode.
+
+All three compatibility-aware presets clear the `minimum-release-age` cooldown for message-type dependencies (`minimumReleaseAge: null`). The Message Contract Service already decides which versions are safe to adopt, and its responses may not include release timestamps; without them, Renovate would keep these updates pending indefinitely.
 
 ### `compatibility-aware-kafka-message-deps-app-specific-dev`
 

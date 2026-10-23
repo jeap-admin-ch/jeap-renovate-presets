@@ -17,7 +17,8 @@
       "registryUrls": [],
       "versioning": "semver",
       "groupName": "Kafka message contracts",
-      "groupSlug": "kafka-message-contracts"
+      "groupSlug": "kafka-message-contracts",
+      "minimumReleaseAge": null
     }
   ]
 }

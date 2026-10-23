@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Delay updates for upstream dependencies by 3 days to reduce exposure to supply chain attacks on newly published releases. jEAP Maven dependencies are maintained by the jEAP team and should be adopted without delay, so they are excluded, as are vulnerability fixes. Enables OSV vulnerability alerts so that vulnerability fixes are detected and proposed without delay.",
+  "osvVulnerabilityAlerts": true,
+  "packageRules": [
+    {
+      "description": "Apply a 3-day cooldown to updates for upstream (non-jEAP) dependencies. npm is left to config:best-practices (security:minimumReleaseAgeNpm), which applies the same cooldown together with Renovate's maintained opt-outs.",
+      "matchDatasources": [
+        "!npm"
+      ],
+      "matchPackageNames": [
+        "!/^ch\\.admin\\.bit\\.jeap:/"
+      ],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Only Docker Hub provides release timestamps. Images from other registries, such as a registry proxy, would otherwise stay pending indefinitely.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "description": "Do not require a minimum release age for update types that never provide a release timestamp, mirroring Renovate's security:minimumReleaseAge* presets.",
+      "matchUpdateTypes": [
+        "replacement",
+        "pin",
+        "bump",
+        "lockfileUpdate",
+        "rollback"
+      ],
+      "minimumReleaseAge": null
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "minimumReleaseAge": "0 days"
+  }
+}

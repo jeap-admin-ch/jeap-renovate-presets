@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-10-23
+
+### Added
+
+- Added `minimum-release-age`, which delays updates for upstream dependencies by 3 days to reduce exposure to supply chain attacks on newly published releases. jEAP Maven dependencies (`ch.admin.bit.jeap`) and vulnerability fixes are proposed without delay. npm keeps the equivalent cooldown from `config:best-practices`. Docker images from registries other than Docker Hub, and update types without release timestamps, are not delayed instead of staying pending indefinitely.
+
+### Changed
+
+- All four default presets now include `minimum-release-age`. Upstream updates appear 3 days after their release, and `osvVulnerabilityAlerts` is enabled, so Renovate also proposes fixes for vulnerabilities reported by osv.dev.
+- The `compatibility-aware-kafka-message-deps*` presets clear the cooldown for message-type dependencies, whose compatible versions are determined by the Message Contract Service.
+
 ## [0.9.1] - 2026-10-20
 
 ### Fixed
