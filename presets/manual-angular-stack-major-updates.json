@@ -14,6 +14,7 @@
         "@schematics/angular",
         "@quadrel-enterprise-ui/**",
         "@ngx-translate/**",
+        "@ngrx/**",
         "typescript"
       ],
       "matchUpdateTypes": ["major"],
@@ -34,6 +35,7 @@
           "@schematics/angular",
           "@quadrel-enterprise-ui/**",
           "@ngx-translate/**",
+          "@ngrx/**",
           "typescript"
         ],
         "matchUpdateTypes": ["major"],

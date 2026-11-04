@@ -146,7 +146,7 @@ Previously, this preset disabled updates through a package rule, which vulnerabi
 
 ### `manual-angular-stack-major-updates`
 
-Disables Renovate major updates for the coupled Angular frontend stack: Angular, Angular DevKit, Angular ESLint, Angular Builders, Angular schematics, Quadrel Enterprise UI, ngx-translate, and TypeScript. The same restriction applies to vulnerability-alert updates, so a security fix that requires crossing a configured major version is not proposed automatically. Minor and patch updates remain enabled.
+Disables Renovate major updates for the coupled Angular frontend stack: Angular, Angular DevKit, Angular ESLint, Angular Builders, Angular schematics, Quadrel Enterprise UI, ngx-translate, NgRx, and TypeScript. Each NgRx major version requires the matching Angular major version, so NgRx is upgraded together with Angular. The same restriction applies to vulnerability-alert updates, so a security fix that requires crossing a configured major version is not proposed automatically. Minor and patch updates remain enabled.
 
 This is the recommended companion to a default variant, particularly for Angular repositories whose major frontend upgrades are performed as coordinated manual migrations. It is not included in the default variants themselves. It restricts updates rather than enabling the npm manager, and it does not block major updates for unrelated npm packages or enable npm automerge. When the repository configuration also contains `ignore-npm`, remove `ignore-npm`; otherwise Renovate cannot extract npm dependencies or process their updates.
 

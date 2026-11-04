@@ -175,7 +175,7 @@ For an Angular repository where minor and patch updates should remain automated 
 }
 ```
 
-This blocks Renovate major updates for Angular, Angular DevKit, Angular ESLint, Angular Builders, Angular schematics, Quadrel Enterprise UI, ngx-translate, and TypeScript, including vulnerability-alert updates that require a new major version. Minor and patch updates remain enabled and participate in the default all-dependencies pull request.
+This blocks Renovate major updates for Angular, Angular DevKit, Angular ESLint, Angular Builders, Angular schematics, Quadrel Enterprise UI, ngx-translate, NgRx, and TypeScript, including vulnerability-alert updates that require a new major version. Minor and patch updates remain enabled and participate in the default all-dependencies pull request.
 
 ## Custom composition
 
