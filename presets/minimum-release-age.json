@@ -21,6 +21,24 @@
       "minimumReleaseAgeBehaviour": "timestamp-optional"
     },
     {
+      "description": "Digest updates never carry a release timestamp into the branch, so their stability-days status would stay pending indefinitely. Renovate still ages them by the commit date of the tag they track before it creates or updates the branch, so the cooldown keeps applying.",
+      "matchUpdateTypes": [
+        "digest",
+        "pinDigest"
+      ],
+      "minimumReleaseAgeBehaviour": "timestamp-optional"
+    },
+    {
+      "description": "Internal reusable workflows and actions are maintained in-house and adopted without delay, like jEAP Maven dependencies.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "/^nivel-github\\//i"
+      ],
+      "minimumReleaseAge": null
+    },
+    {
       "description": "Do not require a minimum release age for update types that never provide a release timestamp, mirroring Renovate's security:minimumReleaseAge* presets.",
       "matchUpdateTypes": [
         "replacement",

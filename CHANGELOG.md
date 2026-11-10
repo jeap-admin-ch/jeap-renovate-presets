@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2026-11-10
+
+### Added
+
+- `minimum-release-age` exempts internal reusable GitHub Actions workflows and actions from the cooldown. Like jEAP Maven dependencies, they are maintained in-house and adopted without delay. Third-party actions remain subject to the cooldown.
+
+### Fixed
+
+- Digest updates (`digest`, `pinDigest`), such as a GitHub Action pinned to a commit SHA, no longer hold the `renovate/stability-days` status pending indefinitely. They reach the branch without a release timestamp, which the default `timestamp-required` behaviour treated as never old enough. Contrary to the 0.10.0 entry, these update types were affected. Renovate still ages digest updates by the commit date of the tag they track before it creates or updates the branch, so the cooldown keeps applying.
+
 ## [0.10.1] - 2026-11-04
 
 ### Fixed

@@ -37,10 +37,10 @@ const withKafka = mergeChildConfig(defaults, await read('compatibility-aware-kaf
 const hour = 60 * 60 * 1000;
 const fresh = new Date(Date.now() - hour).toISOString();
 const old = new Date(Date.now() - 10 * 24 * hour).toISOString();
-const isPending = async (config, { datasource, packageName, updateType, releaseTimestamp, rules = [] }) => {
+const isPending = async (config, { datasource, manager, packageName, updateType, releaseTimestamp, rules = [] }) => {
   const resolved = await applyPackageRules({
     ...mergeChildConfig(config, { packageRules: rules }),
-    manager: datasource === 'docker' ? 'dockerfile' : datasource,
+    manager: manager ?? (datasource === 'docker' ? 'dockerfile' : datasource),
     datasource,
     packageName,
     depName: packageName,
@@ -61,6 +61,23 @@ const proxied = { datasource: 'docker', packageName: 'repo.bit.admin.ch:8444/pos
 assert.equal(await isPending(defaults, proxied), false, 'Docker images without a timestamp (non-Docker Hub registries) are not held indefinitely');
 assert.equal(await isPending(defaults, { ...proxied, packageName: 'postgres', releaseTimestamp: fresh }), true, 'Docker images with a timestamp (Docker Hub) are delayed');
 
+// A digest update reaches the branch without a releaseTimestamp, so the stability-days status sees none (first
+// assertion). The lookup ages it by the commit date of the tracked tag, which is still delayed (second assertion).
+const action = { datasource: 'github-tags', manager: 'github-actions', packageName: 'actions/checkout' };
+for (const updateType of ['digest', 'pinDigest']) {
+  assert.equal(await isPending(defaults, { ...action, updateType }), false, `${updateType} updates without a timestamp do not hold the stability-days status indefinitely`);
+  assert.equal(await isPending(defaults, { ...action, updateType, releaseTimestamp: fresh }), true, `${updateType} updates of a fresh tag are delayed`);
+}
+assert.equal(await isPending(defaults, { ...action, updateType: 'major', releaseTimestamp: fresh }), true, 'Third-party actions are delayed');
+
+for (const packageName of ['nivel-github/some-workflows', 'NIVEL-GITHUB/some-actions']) {
+  for (const updateType of ['digest', 'major']) {
+    assert.equal(await isPending(defaults, { ...action, packageName, updateType, releaseTimestamp: fresh }), false, `Internal workflows and actions are not delayed (${packageName}, ${updateType})`);
+  }
+}
+assert.equal(await isPending(defaults, { ...action, packageName: 'someone/nivel-github-actions', updateType: 'major', releaseTimestamp: fresh }), true, 'The internal exemption is anchored to the owner');
+assert.equal(await isPending(defaults, { ...upstream, packageName: 'nivel-github/some-workflows', releaseTimestamp: fresh }), true, 'The internal exemption applies to GitHub Actions only');
+
 for (const updateType of ['replacement', 'pin', 'bump', 'lockfileUpdate', 'rollback']) {
   assert.equal(await isPending(defaults, { ...upstream, updateType }), false, `${updateType} updates have no timestamp and are not held`);
   assert.equal(await isPending(defaults, { ...upstream, datasource: 'npm', packageName: 'lodash', updateType }), false, `npm ${updateType} keeps the upstream opt-out`);
@@ -79,4 +96,4 @@ const messageType = { datasource: 'maven', packageName: 'ch.admin.bit.example.me
 assert.equal(await isPending(withKafka, messageType), false, 'Message-type dependencies from the contract service are not held');
 assert.equal(await isPending(withKafka, { ...messageType, releaseTimestamp: fresh }), false, 'Message-type dependencies are not delayed');
 
-console.log('PASS: upstream updates delayed; jEAP, vulnerability fixes, message types, untimestamped Docker images, and timestamp-less update types are not held; npm left to config:best-practices');
+console.log('PASS: upstream updates delayed; jEAP, internal workflows and actions, vulnerability fixes, message types, untimestamped Docker images and digests, and timestamp-less update types are not held; npm left to config:best-practices');
